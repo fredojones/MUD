@@ -49,6 +49,7 @@ public class RegistrationHandler implements InputHandler {
     public void parse(ServerConnection connection, String input) {
         // The user has just started registering, prompt for username
         if (state == RegisterState.NO) {
+            // TODO: Maybe make these strings external i.e. kept in some resources class
             connection.getOutputWriter().print("Username: ");
             state = RegisterState.USERNAME;
             return;
