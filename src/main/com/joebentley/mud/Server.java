@@ -37,7 +37,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,8 +63,9 @@ public class Server implements Runnable {
 
                 ServerConnection connection = new ServerConnection(clientSocket, new LoginHandler());
 
-                FutureTask<?> f = new FutureTask<>(connection, null);
-                executor.execute(f);
+                Thread thread = new Thread(connection);
+
+                executor.execute(thread);
             }
         } catch (IOException e) {
             log.log(Level.SEVERE, e.getMessage());
