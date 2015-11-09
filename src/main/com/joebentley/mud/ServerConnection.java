@@ -139,6 +139,9 @@ public class ServerConnection implements Runnable, Closeable {
             }
         } catch (IOException e) {
             log.log(Level.SEVERE, "Connection Error", e);
+        } finally {
+            // Always remove user when logging out
+            Server.game.getOnlineUsers().remove(user);
         }
     }
 }
