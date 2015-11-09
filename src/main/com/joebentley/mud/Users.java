@@ -40,7 +40,7 @@ public class Users extends ArrayList<User> {
      * @param username to test for
      * @return true if username exists
      */
-    public boolean containsUsername(String username) {
+    public synchronized boolean containsUsername(String username) {
         return this.stream().filter(user -> user.getUsername().equals(username)).findAny().isPresent();
     }
 
@@ -50,7 +50,7 @@ public class Users extends ArrayList<User> {
      * @param username to look for
      * @return user with username
      */
-    public User getByUsername(String username) {
+    public synchronized User getByUsername(String username) {
         return this.stream().filter(user -> user.getUsername().equals(username)).findAny().orElse(null);
     }
 }

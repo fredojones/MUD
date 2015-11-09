@@ -52,7 +52,7 @@ public class DatabaseConnection {
      * @param key    key to find the value of
      * @param orElse value to set key to if it doesn't exist
      */
-    public String getOrElse(String key, String orElse) {
+    public synchronized String getOrElse(String key, String orElse) {
         if (!connection.exists(key)) {
             connection.set(key, orElse);
         }

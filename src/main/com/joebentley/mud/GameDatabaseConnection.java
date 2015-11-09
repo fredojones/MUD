@@ -45,7 +45,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
      *
      * @return next user ID
      */
-    public String getNextUserID() {
+    public synchronized String getNextUserID() {
         // id 1 is reserved for test user
         String ID = getOrElse("user:nextid", "2");
         connection.incr("user:nextid");
