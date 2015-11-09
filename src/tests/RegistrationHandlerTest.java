@@ -32,6 +32,7 @@ package tests;
 
 import main.com.joebentley.mud.GameDatabaseConnection;
 import main.com.joebentley.mud.ServerConnection;
+import main.com.joebentley.mud.handlers.LoginHandler;
 import main.com.joebentley.mud.handlers.RegistrationHandler;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +46,7 @@ import java.security.NoSuchAlgorithmException;
 import static org.junit.Assert.assertTrue;
 
 public class RegistrationHandlerTest {
-    private GameDatabaseConnection connection;
+    private GameDatabaseConnection databaseConnection;
     private RegistrationHandler registrationHandler;
     private ServerConnection serverConnection;
     private StringWriter writer;
@@ -54,8 +55,8 @@ public class RegistrationHandlerTest {
     public void setUp() {
         registrationHandler = new RegistrationHandler();
 
-        connection = new GameDatabaseConnection();
-        connection.deleteUsername("test");
+        databaseConnection = new GameDatabaseConnection();
+        databaseConnection.deleteUsername("test");
 
         serverConnection = new ServerConnection(new Socket());
         writer = new StringWriter();
@@ -77,8 +78,10 @@ public class RegistrationHandlerTest {
 
         registrationHandler.parse(serverConnection, "password");
 
-        // should be in loginhandler now TODO: test for that!
         assertTrue(writer.toString().equals("Successfully created user test\nUsername: "));
-        assertTrue(connection.getUsers().containsUsername("test"));
+        // Test that user was actually added to the database
+        assertTrue(databaseConnection.getUsers().containsUsername("test"));
+        // Should be in LoginHandler now
+        assertTrue(serverConnection.getInputHandler() instanceof LoginHandler);
     }
 }

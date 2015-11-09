@@ -77,6 +77,10 @@ public class ServerConnection implements Runnable, Closeable {
         this.outputWriter = outputWriter;
     }
 
+    public InputHandler getInputHandler() {
+        return inputHandler;
+    }
+
     public void setHandler(InputHandler inputHandler) {
         this.inputHandler = inputHandler;
     }
