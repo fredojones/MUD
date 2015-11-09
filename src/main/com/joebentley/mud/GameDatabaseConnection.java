@@ -150,4 +150,27 @@ public class GameDatabaseConnection extends DatabaseConnection {
     public boolean isUserSaved(User user) {
         return connection.exists("user:" + user.getID());
     }
+
+    /**
+     * Delete user from database
+     *
+     * @param user to delete
+     */
+    public void deleteUser(User user) {
+        connection.del("user:" + user.getID());
+        connection.srem("user:ids", user.getID());
+    }
+
+    /**
+     * Delete user with username
+     *
+     * @param username username to delete
+     */
+    public void deleteUsername(String username) {
+        getUsers().forEach(user -> {
+            if (user.getUsername().equals(username)) {
+                deleteUser(user);
+            }
+        });
+    }
 }

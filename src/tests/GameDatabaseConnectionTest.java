@@ -32,6 +32,8 @@ package tests;
 
 import main.com.joebentley.mud.GameDatabaseConnection;
 import main.com.joebentley.mud.User;
+import main.com.joebentley.mud.exceptions.UsernameAlreadyExistsException;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -45,14 +47,20 @@ public class GameDatabaseConnectionTest {
     private static User user;
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUpClass() {
         connection = new GameDatabaseConnection();
         user = new User("test");
         user.getNewID(connection);
     }
 
+    @Before
+    public void setUp() {
+        // Remove all current test users
+        connection.deleteUsername(user.getUsername());
+    }
+
     @Test
-    public void savingAndGettingNewUser() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void savingAndGettingNewUser() throws NoSuchAlgorithmException, UnsupportedEncodingException, UsernameAlreadyExistsException {
         connection.newUser(user, "password");
 
         assertTrue(connection.isUserSaved(user));
@@ -60,7 +68,7 @@ public class GameDatabaseConnectionTest {
     }
 
     @Test
-    public void savingUserMultipleTimes() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void savingAndUpdatingUser() throws NoSuchAlgorithmException, UnsupportedEncodingException, UsernameAlreadyExistsException {
         connection.newUser(user, "password");
         user.setUsername("joe");
         connection.updateUserGivenByID(user.getID(), user);
@@ -71,8 +79,29 @@ public class GameDatabaseConnectionTest {
         user.setUsername("test");
     }
 
+    @Test(expected = UsernameAlreadyExistsException.class)
+    public void savingUserMultipleTimesThrowsException() throws NoSuchAlgorithmException, UnsupportedEncodingException, UsernameAlreadyExistsException {
+        connection.newUser(user, "password");
+        connection.newUser(user, "password");
+    }
+
     @Test
-    public void verifyingPassword() throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public void savingUserThenDeletingThenSaving() throws NoSuchAlgorithmException, UnsupportedEncodingException, UsernameAlreadyExistsException {
+        connection.newUser(user, "password");
+        connection.deleteUser(user);
+        connection.newUser(user, "password");
+    }
+
+    @Test
+    public void savingUsernameThenDeletingThenSaving() throws NoSuchAlgorithmException, UnsupportedEncodingException, UsernameAlreadyExistsException {
+        connection.newUser(user, "password");
+        User user2 = new User.Builder(connection).setUsername(user.getUsername()).build();
+        connection.deleteUsername(user.getUsername());
+        connection.newUser(user2, "password");
+    }
+
+    @Test
+    public void verifyingPassword() throws UnsupportedEncodingException, NoSuchAlgorithmException, UsernameAlreadyExistsException {
         connection.newUser(user, "password");
 
         assertTrue(connection.verifyPassword(user, "password"));
