@@ -30,7 +30,7 @@
 
 package main.com.joebentley.mud;
 
-import main.com.joebentley.mud.handlers.LoginHandler;
+import main.com.joebentley.mud.handlers.IntroHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -63,7 +63,7 @@ public class Server implements Runnable {
 
                 log.info("New connection " + clientSocket.getInetAddress());
 
-                ServerConnection connection = new ServerConnection(clientSocket, new LoginHandler());
+                ServerConnection connection = new ServerConnection(clientSocket, new IntroHandler());
 
                 Thread thread = new Thread(connection);
 

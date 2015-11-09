@@ -45,6 +45,10 @@ public class RegistrationHandler implements InputHandler {
     private String username;
     private RegisterState state = RegisterState.NO;
 
+    private enum RegisterState {
+        NO, USERNAME, PASSWORD
+    }
+
     @Override
     public void parse(ServerConnection connection, String input) {
         // The user has just started registering, prompt for username
@@ -108,9 +112,5 @@ public class RegistrationHandler implements InputHandler {
             connection.setHandler(new LoginHandler());
             connection.runHandler("login");
         }
-    }
-
-    private enum RegisterState {
-        NO, USERNAME, PASSWORD
     }
 }
