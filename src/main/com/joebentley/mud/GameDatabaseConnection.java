@@ -76,9 +76,11 @@ public class GameDatabaseConnection extends DatabaseConnection {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update((password + salt).getBytes("UTF-8"));
 
+        String digest = String.format("%064x", new java.math.BigInteger(1, md.digest()));
+
         Map<String, String> hash = new HashMap<>();
         hash.put("username", user.getUsername());
-        hash.put("hashed", md.toString());
+        hash.put("hashed", digest);
         hash.put("salt", salt);
 
         connection.hmset("user:" + user.getID(), hash);
@@ -117,7 +119,9 @@ public class GameDatabaseConnection extends DatabaseConnection {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update((password + salt).getBytes("UTF-8"));
 
-        return md.toString().equals(expected);
+        String digest = String.format("%064x", new java.math.BigInteger(1, md.digest()));
+
+        return digest.equals(expected);
     }
 
     /**
