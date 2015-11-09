@@ -31,8 +31,6 @@
 package main.com.joebentley.mud;
 
 import main.com.joebentley.mud.handlers.InputHandler;
-import main.com.joebentley.mud.handlers.LoginHandler;
-import main.com.joebentley.mud.handlers.RegistrationHandler;
 
 import java.io.*;
 import java.net.Socket;
@@ -109,32 +107,12 @@ public class ServerConnection implements Runnable, Closeable {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
             String inputLine;
 
-            // TODO: Move this somewhere else
-            // Ask user whether they want to login or register
-            outputWriter.print("register or login? ");
-            outputWriter.flush();
-
-            outer:
-            while ((inputLine = in.readLine()) != null) {
-                switch (inputLine.trim()) {
-                    case "register":
-                        this.inputHandler = new RegistrationHandler();
-                        break outer;
-                    case "login":
-                        this.inputHandler = new LoginHandler();
-                        break outer;
-                    default:
-                        outputWriter.println("Please enter \"register\" or \"login\"");
-                        outputWriter.flush();
-                }
-            }
-
             // Force user prompt
-            this.inputHandler.parse(this, "");
+            runHandler("");
             outputWriter.flush();
 
             while (running && (inputLine = in.readLine()) != null) {
-                inputHandler.parse(this, inputLine.trim());
+                runHandler(inputLine.trim());
                 outputWriter.flush();
             }
         } catch (IOException e) {
