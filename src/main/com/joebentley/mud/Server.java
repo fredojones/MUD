@@ -41,9 +41,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Server implements Runnable {
+    private static final Logger log = Logger.getLogger(Server.class.getName());
+
     public static final int PORT_NUMBER = 1024;
     public static final Game game = new Game();
-    private static final Logger log = Logger.getLogger(Server.class.getName());
+
     private ExecutorService executor;
     private boolean listening = true;
 
