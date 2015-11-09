@@ -75,6 +75,10 @@ public class ServerConnection implements Runnable, Closeable {
         return outputWriter;
     }
 
+    public void setOutputWriter(PrintWriter outputWriter) {
+        this.outputWriter = outputWriter;
+    }
+
     public void setHandler(InputHandler inputHandler) {
         this.inputHandler = inputHandler;
     }
