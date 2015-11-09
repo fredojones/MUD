@@ -32,6 +32,7 @@ package main.com.joebentley.mud.handlers;
 
 import main.com.joebentley.mud.ServerConnection;
 import main.com.joebentley.mud.User;
+import main.com.joebentley.mud.exceptions.UsernameAlreadyExistsException;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -87,6 +88,11 @@ public class RegistrationHandler implements InputHandler {
             } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
                 connection.getOutputWriter().println("Error creating new user");
+                state = RegisterState.NO;
+                return;
+            } catch (UsernameAlreadyExistsException e) {
+                e.printStackTrace();
+                connection.getOutputWriter().println("Error username already exists");
                 state = RegisterState.NO;
                 return;
             }

@@ -30,6 +30,8 @@
 
 package main.com.joebentley.mud;
 
+import main.com.joebentley.mud.exceptions.UsernameAlreadyExistsException;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -57,10 +59,14 @@ public class GameDatabaseConnection extends DatabaseConnection {
      *
      * @param user to add to database
      */
-    public void newUser(User user, String password) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void newUser(User user, String password)
+            throws NoSuchAlgorithmException, UnsupportedEncodingException, UsernameAlreadyExistsException {
+
         connection.sadd("user:ids", user.getID());
 
-        // TODO: what if user already exists?
+        if (getUsers().containsUsername(user.getUsername())) {
+            throw new UsernameAlreadyExistsException();
+        }
 
         // Generate salt
         SecureRandom random = new SecureRandom();
