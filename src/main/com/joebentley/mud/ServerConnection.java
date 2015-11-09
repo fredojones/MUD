@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 
 public class ServerConnection implements Runnable, Closeable {
     private static final Logger log = Logger.getLogger(ServerConnection.class.getName());
+
     private Socket clientSocket;
     private InputHandler inputHandler;
     private PrintWriter outputWriter;
@@ -133,7 +134,7 @@ public class ServerConnection implements Runnable, Closeable {
                 outputWriter.flush();
             }
         } catch (IOException e) {
-            log.log(Level.SEVERE, e.getMessage());
+            log.log(Level.SEVERE, "Connection Error", e);
         }
     }
 }

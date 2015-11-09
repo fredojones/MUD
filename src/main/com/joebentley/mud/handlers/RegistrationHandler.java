@@ -36,8 +36,12 @@ import main.com.joebentley.mud.exceptions.UsernameAlreadyExistsException;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RegistrationHandler implements InputHandler {
+    private static final Logger log = Logger.getLogger(ServerConnection.class.getName());
+
     private String username;
     private RegisterState state = RegisterState.NO;
 
@@ -86,12 +90,12 @@ public class RegistrationHandler implements InputHandler {
             try {
                 connection.getDatabaseConnection().newUser(user, input);
             } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                log.log(Level.SEVERE, "Error creating user", e);
                 connection.getOutputWriter().println("Error creating new user");
                 state = RegisterState.NO;
                 return;
             } catch (UsernameAlreadyExistsException e) {
-                e.printStackTrace();
+                log.log(Level.SEVERE, "Error username already exists in redis", e);
                 connection.getOutputWriter().println("Error username already exists");
                 state = RegisterState.NO;
                 return;

@@ -68,7 +68,7 @@ public class Server implements Runnable {
                 executor.execute(thread);
             }
         } catch (IOException e) {
-            log.log(Level.SEVERE, e.getMessage());
+            log.log(Level.SEVERE, "Server Error", e);
         }
     }
 }
