@@ -55,6 +55,14 @@ public class Room implements Saveable {
         this.ID = ID;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Map<Exit, String> getExits() {
         return exits;
     }
@@ -83,6 +91,11 @@ public class Room implements Saveable {
 
         public Builder setID(String ID) {
             room.setID(ID);
+            return this;
+        }
+
+        public Builder setName(String name) {
+            room.setName(name);
             return this;
         }
 

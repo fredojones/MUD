@@ -227,6 +227,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
      * @param room room to update
      */
     public void updateRoom(String ID, Room room) {
+        connection.hset("room:" + ID, "name", room.getName());
         connection.hmset("room:" + ID + ":exits", room.getStringExits());
     }
 
@@ -239,12 +240,17 @@ public class GameDatabaseConnection extends DatabaseConnection {
         Rooms rooms = new Rooms();
 
         connection.sinter("room:ids").forEach(ID -> {
-                    if (connection.exists("room:" + ID + ":exits")) {
-                        Map<String, String> exits = connection.hgetAll("room:" + ID + ":exits");
-                        rooms.add(new Room.Builder().setID(ID).setStringExits(exits).build());
-                    }
+            if (connection.exists("room:" + ID)) {
+                Map<String, String> exits = new HashMap<>();
+                if (connection.exists("room:" + ID + ":exits")) {
+                    exits = connection.hgetAll("room:" + ID + ":exits");
                 }
-        );
+
+                String name = connection.hget("room:" + ID, "name");
+
+                rooms.add(new Room.Builder().setID(ID).setName(name).setStringExits(exits).build());
+            }
+        });
 
         return rooms;
     }

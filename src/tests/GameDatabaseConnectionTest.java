@@ -61,7 +61,7 @@ public class GameDatabaseConnectionTest {
         Map<Room.Exit, String> exits = new HashMap<>();
         exits.put(Room.Exit.NORTH, "2");
         exits.put(Room.Exit.SOUTH, "5");
-        room = new Room.Builder().setID(connection.getNextRoomID()).setExits(exits).build();
+        room = new Room.Builder().setID(connection.getNextRoomID()).setExits(exits).setName("testroom").build();
     }
 
     @Before
@@ -129,8 +129,10 @@ public class GameDatabaseConnectionTest {
     }
 
     @Test
-    public void addedRoomHasExitsStored() throws IDExistsException, NoIDException {
+    public void addedRoomHasStoredProperly() throws IDExistsException, NoIDException {
         connection.addRoom(room);
-        assertTrue(connection.getRooms().getByID(room.getID()).getExits().equals(room.getExits()));
+        Room stored = connection.getRooms().getByID(room.getID());
+        assertTrue(stored.getName().equals(room.getName()));
+        assertTrue(stored.getExits().equals(room.getExits()));
     }
 }
