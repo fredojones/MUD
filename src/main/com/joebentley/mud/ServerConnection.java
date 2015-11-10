@@ -31,6 +31,7 @@
 package main.com.joebentley.mud;
 
 import main.com.joebentley.mud.handlers.InputHandler;
+import main.com.joebentley.mud.saveables.User;
 
 import java.io.*;
 import java.net.Socket;

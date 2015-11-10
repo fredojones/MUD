@@ -28,33 +28,13 @@
  *
  */
 
-package main.com.joebentley.mud;
+package main.com.joebentley.mud.saveables;
 
-import main.com.joebentley.mud.saveables.User;
-import main.com.joebentley.mud.saveables.Users;
+import java.util.List;
 
-public class Game {
-    private Users onlineUsers;
-
-    public Game() {
-        onlineUsers = new Users();
-    }
-
-    /**
-     * Get list of users that are currently logged in
-     *
-     * @return users logged in
-     */
-    public Users getOnlineUsers() {
-        return onlineUsers;
-    }
-
-    /**
-     * Add user to list of online users
-     *
-     * @param user user to add
-     */
-    public void addOnlineUser(User user) {
-        onlineUsers.add(user);
+public interface SaveableCollection<T extends Saveable> extends List<T> {
+    // TODO: Make synchronized
+    default T getByID(String ID) {
+        return this.stream().filter(thing -> thing.getID().equals(ID)).findAny().orElse(null);
     }
 }

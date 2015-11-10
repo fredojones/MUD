@@ -28,11 +28,11 @@
  *
  */
 
-package main.com.joebentley.mud;
+package main.com.joebentley.mud.saveables;
 
 import java.util.ArrayList;
 
-public class Users extends ArrayList<User> {
+public class Users extends ArrayList<User> implements SaveableCollection<User> {
 
     /**
      * Check if users list contains user with usernam

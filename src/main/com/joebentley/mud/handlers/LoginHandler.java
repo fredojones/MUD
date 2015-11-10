@@ -32,7 +32,7 @@ package main.com.joebentley.mud.handlers;
 
 import main.com.joebentley.mud.Server;
 import main.com.joebentley.mud.ServerConnection;
-import main.com.joebentley.mud.User;
+import main.com.joebentley.mud.saveables.User;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;

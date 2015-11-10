@@ -28,8 +28,12 @@
  *
  */
 
-package main.com.joebentley.mud;
+package main.com.joebentley.mud.saveables;
 
-public enum Group {
-    PUBLIC, ADMIN, OWNER
+public interface Saveable {
+    String getID();
+
+    default String getSaveableName() {
+        return this.getClass().getSimpleName().toLowerCase();
+    }
 }

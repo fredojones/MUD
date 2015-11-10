@@ -31,32 +31,46 @@
 package tests;
 
 import main.com.joebentley.mud.GameDatabaseConnection;
-import main.com.joebentley.mud.User;
+import main.com.joebentley.mud.exceptions.IDExistsException;
+import main.com.joebentley.mud.exceptions.NoIDException;
 import main.com.joebentley.mud.exceptions.UsernameAlreadyExistsException;
+import main.com.joebentley.mud.saveables.Room;
+import main.com.joebentley.mud.saveables.User;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
 public class GameDatabaseConnectionTest {
     private static GameDatabaseConnection connection;
     private static User user;
+    private static Room room;
 
     @BeforeClass
     public static void setUpClass() {
         connection = new GameDatabaseConnection();
         user = new User("test");
         user.getNewID(connection);
+
+        Map<Room.Exit, String> exits = new HashMap<>();
+        exits.put(Room.Exit.NORTH, "2");
+        exits.put(Room.Exit.SOUTH, "5");
+        room = new Room.Builder().setID(connection.getNextRoomID()).setExits(exits).build();
     }
 
     @Before
     public void setUp() {
         // Remove all current test users
         connection.deleteUsername(user.getUsername());
+
+        // Re-remove room
+        connection.removeID(room);
     }
 
     @Test
@@ -74,6 +88,7 @@ public class GameDatabaseConnectionTest {
         connection.updateUserGivenByID(user.getID(), user);
 
         assertTrue(connection.isUserSaved(user));
+        assertTrue(connection.isIDRegistered(user));
         assertTrue(connection.getUsers().containsUsername(user.getUsername()));
 
         user.setUsername("test");
@@ -105,5 +120,17 @@ public class GameDatabaseConnectionTest {
         connection.newUser(user, "password");
 
         assertTrue(connection.verifyPassword(user, "password"));
+    }
+
+    @Test
+    public void addedRoomIDExists() throws IDExistsException {
+        connection.addRoomID(room.getID());
+        assertTrue(connection.isIDRegistered(room));
+    }
+
+    @Test
+    public void addedRoomHasExitsStored() throws IDExistsException, NoIDException {
+        connection.addRoom(room);
+        assertTrue(connection.getRooms().getByID(room.getID()).getExits().equals(room.getExits()));
     }
 }

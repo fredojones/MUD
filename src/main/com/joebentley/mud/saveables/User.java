@@ -28,9 +28,11 @@
  *
  */
 
-package main.com.joebentley.mud;
+package main.com.joebentley.mud.saveables;
 
-public class User {
+import main.com.joebentley.mud.GameDatabaseConnection;
+
+public class User implements Saveable {
     public static final User testUser = new User("test");
 
     static {
@@ -70,6 +72,11 @@ public class User {
 
     public void getNewID(GameDatabaseConnection connection) {
         ID = connection.getNextUserID();
+    }
+
+    @Override
+    public String getSaveableName() {
+        return "user";
     }
 
     /**

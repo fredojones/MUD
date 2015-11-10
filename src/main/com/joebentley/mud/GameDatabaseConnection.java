@@ -30,7 +30,10 @@
 
 package main.com.joebentley.mud;
 
+import main.com.joebentley.mud.exceptions.IDExistsException;
+import main.com.joebentley.mud.exceptions.NoIDException;
 import main.com.joebentley.mud.exceptions.UsernameAlreadyExistsException;
+import main.com.joebentley.mud.saveables.*;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -176,5 +179,90 @@ public class GameDatabaseConnection extends DatabaseConnection {
                 deleteUser(user);
             }
         });
+    }
+
+    /**
+     * Get next available room ID
+     * @return room ID
+     */
+    public synchronized String getNextRoomID() {
+        String ID = getOrElse("room:nextid", "1");
+        connection.incr("room:nextid");
+        return ID;
+    }
+
+    /**
+     * Add Room ID to the list
+     * @param ID to add
+     * @throws IDExistsException if room with ID already exists
+     */
+    public void addRoomID(String ID) throws IDExistsException {
+        if (connection.smembers("room:ids").contains(ID)) {
+            throw new IDExistsException();
+        }
+        connection.sadd("room:ids", ID);
+    }
+
+    /**
+     * Add room hashmap to the list
+     * @param room room to add
+     * @throws NoIDException if room has no ID
+     * @throws IDExistsException if room with ID already exists
+     */
+    public void addRoom(Room room) throws NoIDException, IDExistsException {
+        String ID = room.getID();
+
+        if (ID == null) {
+            throw new NoIDException();
+        }
+
+        addRoomID(ID);
+
+        updateRoom(ID, room);
+    }
+
+    /**
+     * Update room at ID with new room
+     * @param ID ID to at room at
+     * @param room room to update
+     */
+    public void updateRoom(String ID, Room room) {
+        connection.hmset("room:" + ID + ":exits", room.getStringExits());
+    }
+
+    /**
+     * Get all rooms from the database
+     *
+     * @return all saved rooms
+     */
+    public Rooms getRooms() {
+        Rooms rooms = new Rooms();
+
+        connection.sinter("room:ids").forEach(ID -> {
+                    if (connection.exists("room:" + ID + ":exits")) {
+                        Map<String, String> exits = connection.hgetAll("room:" + ID + ":exits");
+                        rooms.add(new Room.Builder().setID(ID).setStringExits(exits).build());
+                    }
+                }
+        );
+
+        return rooms;
+    }
+
+    /**
+     * Check if thing has ID in ID list
+     * @param thing to check if ID saved in ID list
+     * @return true if it is saved
+     */
+    public boolean isIDRegistered(Saveable thing) {
+        return connection.smembers(thing.getSaveableName() + ":ids").contains(thing.getID());
+    }
+
+    /**
+     * Remove ID from ID list (if it exists)
+     * @param thing who's ID to remove from list
+     */
+    public void removeID(Saveable thing) {
+        connection.srem(thing.getSaveableName() + ":ids", thing.getID());
     }
 }
