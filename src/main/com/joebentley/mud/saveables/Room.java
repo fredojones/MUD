@@ -35,6 +35,7 @@ import java.util.Map;
 
 public class Room implements Saveable {
     private String ID;
+    private String name;
     private Map<Exit, String> exits;
 
     public enum Exit {
@@ -52,11 +53,6 @@ public class Room implements Saveable {
 
     public void setID(String ID) {
         this.ID = ID;
-    }
-
-    @Override
-    public String getSaveableName() {
-        return "room";
     }
 
     public Map<Exit, String> getExits() {

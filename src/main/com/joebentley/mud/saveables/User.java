@@ -74,11 +74,6 @@ public class User implements Saveable {
         ID = connection.getNextUserID();
     }
 
-    @Override
-    public String getSaveableName() {
-        return "user";
-    }
-
     /**
      * Class to build a new User instance (handles getting new user ID, etc.
      */
