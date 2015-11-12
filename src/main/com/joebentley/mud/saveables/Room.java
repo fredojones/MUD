@@ -37,6 +37,7 @@ public class Room implements Saveable {
     private String ID;
     private String name;
     private Map<Exit, String> exits;
+    private Map<String, String> properties;
 
     public enum Exit {
         NORTH, SOUTH, EAST, WEST
@@ -44,6 +45,7 @@ public class Room implements Saveable {
 
     public Room() {
         exits = new HashMap<>();
+        properties = new HashMap<>();
     }
 
     @Override
@@ -63,6 +65,18 @@ public class Room implements Saveable {
         this.name = name;
     }
 
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    public void setProperty(String key, String value) {
+        properties.put(key, value);
+    }
+
     public Map<Exit, String> getExits() {
         return exits;
     }
@@ -75,6 +89,10 @@ public class Room implements Saveable {
         Map<String, String> exitStrings = new HashMap<>();
         exits.forEach((exit, ID) -> exitStrings.put(exit.toString(), ID));
         return exitStrings;
+    }
+
+    public boolean hasExits() {
+        return !exits.isEmpty();
     }
 
     // TODO: Write test

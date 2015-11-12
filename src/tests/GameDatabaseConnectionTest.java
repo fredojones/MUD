@@ -131,8 +131,13 @@ public class GameDatabaseConnectionTest {
     @Test
     public void addedRoomHasStoredProperly() throws IDExistsException, NoIDException {
         connection.addRoom(room);
-        Room stored = connection.getRooms().getByID(room.getID());
+        Room stored = connection.getRooms().getByID(room.getID()).get();
         assertTrue(stored.getName().equals(room.getName()));
         assertTrue(stored.getExits().equals(room.getExits()));
+    }
+
+    @Test(expected = NoIDException.class)
+    public void updatingNotAddedRoomThrowsException() throws NoIDException {
+        connection.updateRoom(room.getID(), room);
     }
 }

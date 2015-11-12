@@ -31,10 +31,11 @@
 package main.com.joebentley.mud.saveables;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SaveableCollection<T extends Saveable> extends List<T> {
-    // TODO: Make synchronized
-    default T getByID(String ID) {
-        return this.stream().filter(thing -> thing.getID().equals(ID)).findAny().orElse(null);
+    // TODO: Maybe make synchronized
+    default Optional<T> getByID(String ID) {
+        return this.stream().filter(thing -> thing.getID().equals(ID)).findAny();
     }
 }

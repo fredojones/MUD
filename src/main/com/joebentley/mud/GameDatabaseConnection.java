@@ -42,8 +42,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class GameDatabaseConnection extends DatabaseConnection {
+    private static final Logger log = Logger.getLogger(ServerConnection.class.getName());
 
     /**
      * Get next user ID from the database
@@ -224,11 +226,18 @@ public class GameDatabaseConnection extends DatabaseConnection {
     /**
      * Update room at ID with new room
      * @param ID ID to at room at
-     * @param room room to update
+     * @param room room to update with
+     * @throws NoIDException if ID given doesn't exist in database
      */
-    public void updateRoom(String ID, Room room) {
+    public void updateRoom(String ID, Room room) throws NoIDException {
+        if (!isIDRegistered(room)) {
+            throw new NoIDException();
+        }
         connection.hset("room:" + ID, "name", room.getName());
-        connection.hmset("room:" + ID + ":exits", room.getStringExits());
+
+        if (room.hasExits()) {
+            connection.hmset("room:" + ID + ":exits", room.getStringExits());
+        }
     }
 
     /**

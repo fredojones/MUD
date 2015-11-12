@@ -30,8 +30,12 @@
 
 package main.com.joebentley.mud.handlers;
 
+import main.com.joebentley.mud.GameDatabaseConnection;
 import main.com.joebentley.mud.Server;
 import main.com.joebentley.mud.ServerConnection;
+import main.com.joebentley.mud.exceptions.IDExistsException;
+import main.com.joebentley.mud.exceptions.NoIDException;
+import main.com.joebentley.mud.saveables.Room;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -78,6 +82,64 @@ public class CommandHandler implements InputHandler {
                     log.log(Level.SEVERE, e.getMessage());
                 }
             });
+
+            // TODO: Check that strings[0] actually exists
+            functions.put("create", (serverConnection, strings) -> {
+                switch (strings[0]) {
+                    case "room": {
+                        GameDatabaseConnection conn = serverConnection.getDatabaseConnection();
+                        String ID = conn.getNextRoomID();
+
+                        try {
+                            conn.addRoomID(ID);
+                        } catch (IDExistsException e) {
+                            serverConnection.getOutputWriter().println("Couldn't add room (ID exists)");
+                            log.log(Level.SEVERE, "Room save failed", e);
+                            return;
+                        }
+
+                        serverConnection.getOutputWriter().println("Room created with ID " + ID);
+                        break;
+                    }
+                }
+            });
+
+            functions.put("update", (serverConnection, strings) -> {
+                switch (strings[0]) {
+                    case "room": {
+                        // TODO: Allow adding exits/properties here
+                        // TODO: Check for array indices
+
+                        if (strings.length < 4) {
+                            serverConnection.getOutputWriter().println("Not enough arguments");
+                            return;
+                        }
+
+                        String ID = strings[1];
+                        Room room = serverConnection.getDatabaseConnection().getRooms().getByID(ID)
+                                .orElse(new Room.Builder().setID(ID).build());
+
+                        switch (strings[2]) {
+                            case "name":
+                                room.setName(strings[3]);
+                                break;
+                        }
+
+                        GameDatabaseConnection conn = serverConnection.getDatabaseConnection();
+
+                        try {
+                            conn.updateRoom(ID, room);
+                        } catch (NoIDException e) {
+                            serverConnection.getOutputWriter().println("Given ID does not exist!");
+                            log.log(Level.SEVERE, "Error updating room", e);
+                        }
+
+                        break;
+                    }
+                }
+            });
+
+            // TODO: Function for viewing properties of object in DB
         }
 
         public void dispatch(ServerConnection connection, String command, String[] arguments) {
