@@ -83,8 +83,12 @@ public class CommandHandler implements InputHandler {
                 }
             });
 
-            // TODO: Check that strings[0] actually exists
             functions.put("create", (serverConnection, strings) -> {
+                if (strings.length == 0) {
+                    serverConnection.getOutputWriter().println("No arguments");
+                    return;
+                }
+
                 switch (strings[0]) {
                     case "room": {
                         GameDatabaseConnection conn = serverConnection.getDatabaseConnection();
@@ -105,10 +109,15 @@ public class CommandHandler implements InputHandler {
             });
 
             functions.put("update", (serverConnection, strings) -> {
+                if (strings.length == 0) {
+                    serverConnection.getOutputWriter().println("No arguments");
+                    return;
+                }
+
                 switch (strings[0]) {
                     case "room": {
                         // TODO: Allow adding exits/properties here
-                        // TODO: Check for array indices
+                        // TODO: Allow multiple word names
 
                         if (strings.length < 4) {
                             serverConnection.getOutputWriter().println("Not enough arguments");
