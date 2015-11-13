@@ -38,8 +38,10 @@ import main.com.joebentley.mud.exceptions.NoIDException;
 import main.com.joebentley.mud.saveables.Room;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,17 +56,25 @@ public class CommandHandler implements InputHandler {
 
     @Override
     public void parse(ServerConnection connection, String input) {
-        String[] splitInput = input.split(" ");
+        List<String> splitInput = Arrays.asList(input.split(" "));
 
-        String command = splitInput[0];
-        String[] arguments = Arrays.copyOfRange(splitInput, 1, splitInput.length);
+        String command = splitInput.get(0);
+        List<String> arguments;
+
+        // Check whether there are any arguments, if not just use empty List
+        if (splitInput.size() == 1) {
+            arguments = new ArrayList<>();
+        } else {
+            // Get all arguments of command
+            arguments = splitInput.subList(1, splitInput.size());
+        }
 
         dispatcher.dispatch(connection, command, arguments);
         connection.getOutputWriter().print(">");
     }
 
     private class Dispatcher {
-        HashMap<String, BiConsumer<ServerConnection, String[]>> functions;
+        HashMap<String, BiConsumer<ServerConnection, List<String>>> functions;
 
         public Dispatcher() {
             functions = new HashMap<>();
@@ -84,12 +94,12 @@ public class CommandHandler implements InputHandler {
             });
 
             functions.put("create", (serverConnection, strings) -> {
-                if (strings.length == 0) {
+                if (strings.size() == 0) {
                     serverConnection.getOutputWriter().println("No arguments");
                     return;
                 }
 
-                switch (strings[0]) {
+                switch (strings.get(0)) {
                     case "room": {
                         GameDatabaseConnection conn = serverConnection.getDatabaseConnection();
                         String ID = conn.getNextRoomID();
@@ -109,28 +119,32 @@ public class CommandHandler implements InputHandler {
             });
 
             functions.put("update", (serverConnection, strings) -> {
-                if (strings.length == 0) {
+                if (strings.size() == 0) {
                     serverConnection.getOutputWriter().println("No arguments");
                     return;
                 }
 
-                switch (strings[0]) {
+                switch (strings.get(0)) {
                     case "room": {
                         // TODO: Allow adding exits/properties here
-                        // TODO: Allow multiple word names
+                        // TODO: Allow multi word names
 
-                        if (strings.length < 4) {
+                        if (strings.size() < 4) {
                             serverConnection.getOutputWriter().println("Not enough arguments");
                             return;
                         }
 
-                        String ID = strings[1];
+                        String ID = strings.get(1);
+                        // If no room with given ID exists yet in the database, build a new one with ID given
                         Room room = serverConnection.getDatabaseConnection().getRooms().getByID(ID)
                                 .orElse(new Room.Builder().setID(ID).build());
 
-                        switch (strings[2]) {
+                        switch (strings.get(2)) {
                             case "name":
-                                room.setName(strings[3]);
+                                // Join all strings after "name" with spaces
+                                room.setName(strings.subList(3, strings.size()).stream()
+                                                    .reduce("", (s, s2) -> s + " " + s2)
+                                                    .trim());
                                 break;
                         }
 
@@ -151,7 +165,7 @@ public class CommandHandler implements InputHandler {
             // TODO: Function for viewing properties of object in DB
         }
 
-        public void dispatch(ServerConnection connection, String command, String[] arguments) {
+        public void dispatch(ServerConnection connection, String command, List<String> arguments) {
             // ignore empty commands
             if (command.trim().length() == 0) {
                 return;
