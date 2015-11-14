@@ -211,7 +211,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
      * @throws NoIDException if room has no ID
      * @throws IDExistsException if room with ID already exists
      */
-    public void addRoom(Room room) throws NoIDException, IDExistsException {
+    public synchronized void addRoom(Room room) throws NoIDException, IDExistsException {
         String ID = room.getID();
 
         if (ID == null) {
@@ -229,7 +229,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
      * @param room room to update with
      * @throws NoIDException if ID given doesn't exist in database
      */
-    public void updateRoom(String ID, Room room) throws NoIDException {
+    public synchronized void updateRoom(String ID, Room room) throws NoIDException {
         if (!isIDRegistered(room)) {
             throw new NoIDException();
         }
