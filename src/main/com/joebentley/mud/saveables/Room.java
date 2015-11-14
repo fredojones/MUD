@@ -85,6 +85,7 @@ public class Room implements Saveable {
         this.exits = exits;
     }
 
+    // TODO: Write test
     public Map<String, String> getStringExits() {
         Map<String, String> exitStrings = new HashMap<>();
         exits.forEach((exit, ID) -> exitStrings.put(exit.toString(), ID));
@@ -98,6 +99,26 @@ public class Room implements Saveable {
     // TODO: Write test
     public void setStringExits(Map<String, String> stringExits) {
         stringExits.forEach((exit, ID) -> exits.put(Exit.valueOf(exit), ID));
+    }
+
+    public String toShortString() {
+        return ID + ": " + name;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder res = new StringBuilder();
+        res.append("ID:   ").append(ID).append("\n")
+           .append("name: ").append(name).append("\n");
+
+        if (!getStringExits().isEmpty())
+            res.append("exits:\n");
+
+        getStringExits().forEach((exit, ID) ->
+            res.append(exit).append(" -> ").append(ID).append("\n")
+        );
+
+        return res.toString();
     }
 
     public static class Builder {

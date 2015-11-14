@@ -241,7 +241,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
     }
 
     /**
-     * Get all rooms from the database
+     * Get all rooms from the database that have a hashmap set at room:ID
      *
      * @return all saved rooms
      */

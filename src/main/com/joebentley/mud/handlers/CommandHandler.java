@@ -93,9 +93,12 @@ public class CommandHandler implements InputHandler {
                 }
             });
 
-            functions.put("create", (serverConnection, strings) -> {
+            functions.put("dbcreate", (serverConnection, strings) -> {
+                final String USAGE = "dbcreate [type]";
+
                 if (strings.size() == 0) {
                     serverConnection.getOutputWriter().println("No arguments");
+                    serverConnection.getOutputWriter().println(USAGE);
                     return;
                 }
 
@@ -118,19 +121,22 @@ public class CommandHandler implements InputHandler {
                 }
             });
 
-            functions.put("update", (serverConnection, strings) -> {
+            functions.put("dbupdate", (serverConnection, strings) -> {
+                final String USAGE = "dbupdate [type] [ID] [attribute] [value]";
+
                 if (strings.size() == 0) {
                     serverConnection.getOutputWriter().println("No arguments");
+                    serverConnection.getOutputWriter().println(USAGE);
                     return;
                 }
 
                 switch (strings.get(0)) {
                     case "room": {
                         // TODO: Allow adding exits/properties here
-                        // TODO: Allow multi word names
 
                         if (strings.size() < 4) {
                             serverConnection.getOutputWriter().println("Not enough arguments");
+                            serverConnection.getOutputWriter().println(USAGE);
                             return;
                         }
 
@@ -154,6 +160,7 @@ public class CommandHandler implements InputHandler {
                             conn.updateRoom(ID, room);
                         } catch (NoIDException e) {
                             serverConnection.getOutputWriter().println("Given ID does not exist!");
+                            serverConnection.getOutputWriter().println(USAGE);
                             log.log(Level.SEVERE, "Error updating room", e);
                         }
 
@@ -162,7 +169,40 @@ public class CommandHandler implements InputHandler {
                 }
             });
 
-            // TODO: Function for viewing properties of object in DB
+            functions.put("dbexamine", (serverConnection, strings) -> {
+                final String USAGE = "dbexamine [type] [(optional) ID]";
+
+                if (strings.size() == 0) {
+                    serverConnection.getOutputWriter().println("No arguments");
+                    serverConnection.getOutputWriter().println(USAGE);
+                    return;
+                }
+
+                switch (strings.get(0)) {
+                    case "room": {
+
+                        if (strings.size() < 2) {
+                            // Print list of rooms
+                            serverConnection.getDatabaseConnection().getRooms().forEach(room ->
+                                serverConnection.getOutputWriter().println(room.toShortString())
+                            );
+                        } else {
+                            // Print detail about individual room
+                            String ID = strings.get(1);
+
+                            Room room = serverConnection.getDatabaseConnection().getRooms().getByID(ID).get();
+
+                            if (room == null) {
+                                serverConnection.getOutputWriter().println("Room with given ID does not exist");
+                                serverConnection.getOutputWriter().println(USAGE);
+                                return;
+                            }
+
+                            serverConnection.getOutputWriter().print(room.toString());
+                        }
+                    }
+                }
+            });
         }
 
         public void dispatch(ServerConnection connection, String command, List<String> arguments) {
