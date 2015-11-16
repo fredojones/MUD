@@ -30,33 +30,27 @@
 
 package main.com.joebentley.mud;
 
-import main.com.joebentley.mud.saveables.User;
-import main.com.joebentley.mud.saveables.Users;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
+import org.luaj.vm2.lib.jse.JsePlatform;
 
-public class Game {
-    private Users onlineUsers;
+import java.util.function.Function;
 
-    public Game() {
-        onlineUsers = new Users();
+public class Behaviour implements Function<Varargs, Varargs> {
+    private LuaValue script;
+
+    public Behaviour(String script) {
+        Globals globals = JsePlatform.standardGlobals();
+        this.script = globals.load(script);
     }
 
-    /**
-     * Get list of users that are currently logged in
-     *
-     * @return users logged in
-     */
-    public Users getOnlineUsers() {
-        return onlineUsers;
+    public LuaValue getScript() {
+        return script;
     }
 
-    /**
-     * Add user to list of online users
-     *
-     * @param user user to add
-     */
-    public void addOnlineUser(User user) {
-        onlineUsers.add(user);
+    @Override
+    public Varargs apply(Varargs val) {
+        return script.invoke(val);
     }
-
-
 }

@@ -30,6 +30,8 @@
 
 package main.com.joebentley.mud.saveables;
 
+import main.com.joebentley.mud.BehaviourDispatcher;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +40,7 @@ public class Room implements Saveable {
     private String name;
     private Map<Exit, String> exits;
     private Map<String, String> properties;
+    private BehaviourDispatcher behaviourDispatcher;
 
     public enum Exit {
         NORTH, SOUTH, EAST, WEST
@@ -46,6 +49,7 @@ public class Room implements Saveable {
     public Room() {
         exits = new HashMap<>();
         properties = new HashMap<>();
+        behaviourDispatcher = new BehaviourDispatcher();
     }
 
     @Override
@@ -85,6 +89,7 @@ public class Room implements Saveable {
         this.exits = exits;
     }
 
+
     // TODO: Write test
     public Map<String, String> getStringExits() {
         Map<String, String> exitStrings = new HashMap<>();
@@ -99,6 +104,10 @@ public class Room implements Saveable {
     // TODO: Write test
     public void setStringExits(Map<String, String> stringExits) {
         stringExits.forEach((exit, ID) -> exits.put(Exit.valueOf(exit), ID));
+    }
+
+    public BehaviourDispatcher getBehaviourDispatcher() {
+        return behaviourDispatcher;
     }
 
     public String toShortString() {

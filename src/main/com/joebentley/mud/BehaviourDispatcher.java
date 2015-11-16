@@ -30,33 +30,35 @@
 
 package main.com.joebentley.mud;
 
-import main.com.joebentley.mud.saveables.User;
-import main.com.joebentley.mud.saveables.Users;
+import org.luaj.vm2.Varargs;
 
-public class Game {
-    private Users onlineUsers;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiFunction;
 
-    public Game() {
-        onlineUsers = new Users();
+public class BehaviourDispatcher implements BiFunction<String, Varargs, Varargs> {
+    private Map<String, Behaviour> behaviours;
+
+    public BehaviourDispatcher() {
+        behaviours = new HashMap<>();
     }
 
-    /**
-     * Get list of users that are currently logged in
-     *
-     * @return users logged in
-     */
-    public Users getOnlineUsers() {
-        return onlineUsers;
+    public void registerBehaviour(String trigger, String script) {
+        behaviours.put(trigger, new Behaviour(script));
     }
 
-    /**
-     * Add user to list of online users
-     *
-     * @param user user to add
-     */
-    public void addOnlineUser(User user) {
-        onlineUsers.add(user);
+    public void registerBehaviour(String trigger, Behaviour behaviour) {
+        behaviours.put(trigger, behaviour);
     }
 
+    @Override
+    public Varargs apply(String s, Varargs args) {
+        Varargs val = null;
 
+        if (behaviours.containsKey(s)) {
+            val = behaviours.get(s).apply(args);
+        }
+
+        return val;
+    }
 }
