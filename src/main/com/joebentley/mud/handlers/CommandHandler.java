@@ -152,14 +152,28 @@ public class CommandHandler implements InputHandler {
                                                     .reduce("", (s, s2) -> s + " " + s2)
                                                     .trim());
                                 break;
+
+                            case "exit": {
+                                String[] exitIDPair = strings.get(3).split(":");
+
+                                if (exitIDPair.length != 2) {
+                                    serverConnection.getOutputWriter().println("Argument should be of form 'exit:ID'");
+                                    return;
+                                }
+
+                                // Add the exit to the room
+                                room.getExits().put(exitIDPair[0], exitIDPair[1]);
+
+                                break;
+                            }
                         }
 
                         GameDatabaseConnection conn = serverConnection.getDatabaseConnection();
 
                         try {
-                            // add room to database
+                            // Add room to database
                             conn.updateRoom(ID, room);
-                            // add room to list of current game rooms
+                            // Add room to list of current game rooms
                             Server.game.updateRoom(ID, room);
                         } catch (NoIDException e) {
                             serverConnection.getOutputWriter().println("Given ID does not exist!");
@@ -202,7 +216,13 @@ public class CommandHandler implements InputHandler {
 
                             serverConnection.getOutputWriter().print(room.toString());
                         }
+
+                        break;
                     }
+
+                    default:
+                        serverConnection.getOutputWriter().println("Unrecognized object type " + strings.get(0));
+                        serverConnection.getOutputWriter().println(USAGE);
                 }
             });
         }

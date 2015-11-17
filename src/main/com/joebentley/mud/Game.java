@@ -41,6 +41,7 @@ public class Game {
 
     public Game() {
         onlineUsers = new Users();
+        rooms = new Rooms();
     }
 
     /**

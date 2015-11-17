@@ -38,13 +38,9 @@ import java.util.Map;
 public class Room implements Saveable {
     private String ID;
     private String name;
-    private Map<Exit, String> exits;
+    private Map<String, String> exits;
     private Map<String, String> properties;
     private BehaviourDispatcher behaviourDispatcher;
-
-    public enum Exit {
-        NORTH, SOUTH, EAST, WEST
-    }
 
     public Room() {
         exits = new HashMap<>();
@@ -81,29 +77,16 @@ public class Room implements Saveable {
         properties.put(key, value);
     }
 
-    public Map<Exit, String> getExits() {
+    public Map<String, String> getExits() {
         return exits;
     }
 
-    public void setExits(Map<Exit, String> exits) {
+    public void setExits(Map<String, String> exits) {
         this.exits = exits;
-    }
-
-
-    // TODO: Write test
-    public Map<String, String> getStringExits() {
-        Map<String, String> exitStrings = new HashMap<>();
-        exits.forEach((exit, ID) -> exitStrings.put(exit.toString(), ID));
-        return exitStrings;
     }
 
     public boolean hasExits() {
         return !exits.isEmpty();
-    }
-
-    // TODO: Write test
-    public void setStringExits(Map<String, String> stringExits) {
-        stringExits.forEach((exit, ID) -> exits.put(Exit.valueOf(exit), ID));
     }
 
     public BehaviourDispatcher getBehaviourDispatcher() {
@@ -120,10 +103,10 @@ public class Room implements Saveable {
         res.append("ID:   ").append(ID).append("\n")
            .append("name: ").append(name).append("\n");
 
-        if (!getStringExits().isEmpty())
+        if (!getExits().isEmpty())
             res.append("exits:\n");
 
-        getStringExits().forEach((exit, ID) ->
+        getExits().forEach((exit, ID) ->
             res.append(exit).append(" -> ").append(ID).append("\n")
         );
 
@@ -147,13 +130,8 @@ public class Room implements Saveable {
             return this;
         }
 
-        public Builder setExits(Map<Exit, String> exits) {
+        public Builder setExits(Map<String, String> exits) {
             room.setExits(exits);
-            return this;
-        }
-
-        public Builder setStringExits(Map<String, String> exits) {
-            room.setStringExits(exits);
             return this;
         }
 

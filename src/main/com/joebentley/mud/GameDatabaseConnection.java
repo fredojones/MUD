@@ -236,7 +236,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
         connection.hset("room:" + ID, "name", room.getName());
 
         if (room.hasExits()) {
-            connection.hmset("room:" + ID + ":exits", room.getStringExits());
+            connection.hmset("room:" + ID + ":exits", room.getExits());
         }
     }
 
@@ -257,7 +257,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
 
                 String name = connection.hget("room:" + ID, "name");
 
-                rooms.put(ID, new Room.Builder().setID(ID).setName(name).setStringExits(exits).build());
+                rooms.put(ID, new Room.Builder().setID(ID).setName(name).setExits(exits).build());
             }
         });
 

@@ -58,9 +58,9 @@ public class GameDatabaseConnectionTest {
         user = new User("test");
         user.getNewID(connection);
 
-        Map<Room.Exit, String> exits = new HashMap<>();
-        exits.put(Room.Exit.NORTH, "2");
-        exits.put(Room.Exit.SOUTH, "5");
+        Map<String, String> exits = new HashMap<>();
+        exits.put("north", "2");
+        exits.put("south", "5");
         room = new Room.Builder().setID(connection.getNextRoomID()).setExits(exits).setName("testroom").build();
     }
 
