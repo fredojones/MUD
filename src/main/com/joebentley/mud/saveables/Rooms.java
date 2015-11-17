@@ -30,8 +30,8 @@
 
 package main.com.joebentley.mud.saveables;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
-public class Rooms extends ArrayList<Room> implements SaveableCollection<Room> {
+public class Rooms extends HashMap<String, Room> implements SaveableCollection<Room> {
 
 }

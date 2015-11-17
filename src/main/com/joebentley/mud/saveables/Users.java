@@ -30,9 +30,9 @@
 
 package main.com.joebentley.mud.saveables;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
-public class Users extends ArrayList<User> implements SaveableCollection<User> {
+public class Users extends HashMap<String, User> implements SaveableCollection<User> {
 
     /**
      * Check if users list contains user with usernam
@@ -41,7 +41,7 @@ public class Users extends ArrayList<User> implements SaveableCollection<User> {
      * @return true if username exists
      */
     public synchronized boolean containsUsername(String username) {
-        return this.stream().filter(user -> user.getUsername().equals(username)).findAny().isPresent();
+        return this.values().stream().filter(user -> user.getUsername().equals(username)).findAny().isPresent();
     }
 
     /**
@@ -51,6 +51,6 @@ public class Users extends ArrayList<User> implements SaveableCollection<User> {
      * @return user with username
      */
     public synchronized User getByUsername(String username) {
-        return this.stream().filter(user -> user.getUsername().equals(username)).findAny().orElse(null);
+        return this.values().stream().filter(user -> user.getUsername().equals(username)).findAny().orElse(null);
     }
 }

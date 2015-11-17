@@ -80,7 +80,7 @@ public class CommandHandler implements InputHandler {
             functions = new HashMap<>();
 
             functions.put("users", (serverConnection, s) ->
-                    Server.game.getOnlineUsers().forEach(user ->
+                    Server.game.getOnlineUsers().forEach((ID, user) ->
                             serverConnection.getOutputWriter().println(user.getUsername())
                     )
             );
@@ -142,8 +142,8 @@ public class CommandHandler implements InputHandler {
 
                         String ID = strings.get(1);
                         // If no room with given ID exists yet in the database, build a new one with ID given
-                        Room room = serverConnection.getDatabaseConnection().getRooms().getByID(ID)
-                                .orElse(new Room.Builder().setID(ID).build());
+                        Room room = serverConnection.getDatabaseConnection().getRooms().getOrDefault(ID,
+                                new Room.Builder().setID(ID).build());
 
                         switch (strings.get(2)) {
                             case "name":
@@ -157,7 +157,10 @@ public class CommandHandler implements InputHandler {
                         GameDatabaseConnection conn = serverConnection.getDatabaseConnection();
 
                         try {
+                            // add room to database
                             conn.updateRoom(ID, room);
+                            // add room to list of current game rooms
+                            Server.game.updateRoom(ID, room);
                         } catch (NoIDException e) {
                             serverConnection.getOutputWriter().println("Given ID does not exist!");
                             serverConnection.getOutputWriter().println(USAGE);
@@ -180,17 +183,16 @@ public class CommandHandler implements InputHandler {
 
                 switch (strings.get(0)) {
                     case "room": {
-
                         if (strings.size() < 2) {
                             // Print list of rooms
-                            serverConnection.getDatabaseConnection().getRooms().forEach(room ->
+                            serverConnection.getDatabaseConnection().getRooms().forEach((ID, room) ->
                                 serverConnection.getOutputWriter().println(room.toShortString())
                             );
                         } else {
                             // Print detail about individual room
                             String ID = strings.get(1);
 
-                            Room room = serverConnection.getDatabaseConnection().getRooms().getByID(ID).get();
+                            Room room = serverConnection.getDatabaseConnection().getRooms().get(ID);
 
                             if (room == null) {
                                 serverConnection.getOutputWriter().println("Room with given ID does not exist");

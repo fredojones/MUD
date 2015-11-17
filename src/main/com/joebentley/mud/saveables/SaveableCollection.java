@@ -30,12 +30,7 @@
 
 package main.com.joebentley.mud.saveables;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
-public interface SaveableCollection<T extends Saveable> extends List<T> {
-    // TODO: Maybe make synchronized
-    default Optional<T> getByID(String ID) {
-        return this.stream().filter(thing -> thing.getID().equals(ID)).findAny();
-    }
+public interface SaveableCollection<T extends Saveable> extends Map<String, T> {
 }

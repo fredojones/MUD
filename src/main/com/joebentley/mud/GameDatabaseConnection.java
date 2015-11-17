@@ -142,7 +142,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
                         User user = new User();
                         user.setID(ID);
                         user.setUsername(connection.hget("user:" + ID, "username"));
-                        users.add(user);
+                        users.put(ID, user);
                     }
                 }
         );
@@ -176,7 +176,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
      * @param username username to delete
      */
     public void deleteUsername(String username) {
-        getUsers().forEach(user -> {
+        getUsers().forEach((ID, user) -> {
             if (user.getUsername().equals(username)) {
                 deleteUser(user);
             }
@@ -257,7 +257,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
 
                 String name = connection.hget("room:" + ID, "name");
 
-                rooms.add(new Room.Builder().setID(ID).setName(name).setStringExits(exits).build());
+                rooms.put(ID, new Room.Builder().setID(ID).setName(name).setStringExits(exits).build());
             }
         });
 

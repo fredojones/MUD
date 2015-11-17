@@ -30,11 +30,14 @@
 
 package main.com.joebentley.mud;
 
+import main.com.joebentley.mud.saveables.Room;
+import main.com.joebentley.mud.saveables.Rooms;
 import main.com.joebentley.mud.saveables.User;
 import main.com.joebentley.mud.saveables.Users;
 
 public class Game {
     private Users onlineUsers;
+    private Rooms rooms;
 
     public Game() {
         onlineUsers = new Users();
@@ -55,8 +58,25 @@ public class Game {
      * @param user user to add
      */
     public void addOnlineUser(User user) {
-        onlineUsers.add(user);
+        onlineUsers.put(user.getID(), user);
     }
 
+    /**
+     * Get list of current rooms in game
+     *
+     * @return rooms in game
+     */
+    public Rooms getRooms() {
+        return rooms;
+    }
 
+    /**
+     * Update room at ID with room
+     *
+     * @param ID to update
+     * @param room to update with
+     */
+    public void updateRoom(String ID, Room room) {
+        rooms.put(ID, room);
+    }
 }
