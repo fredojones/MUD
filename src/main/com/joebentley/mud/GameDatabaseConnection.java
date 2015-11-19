@@ -73,6 +73,8 @@ public class GameDatabaseConnection extends DatabaseConnection {
             throw new UsernameAlreadyExistsException();
         }
 
+        // TODO: Use bcrypt!!! also wipe password from memory
+
         // Generate salt
         SecureRandom random = new SecureRandom();
         String salt = new BigInteger(130, random).toString(32);

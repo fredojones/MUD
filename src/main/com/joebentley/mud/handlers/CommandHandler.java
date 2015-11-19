@@ -93,35 +93,14 @@ public class CommandHandler implements InputHandler {
                 }
             });
 
-            functions.put("dbcreate", (serverConnection, strings) -> {
-                final String USAGE = "dbcreate [type]";
+            functions.put("dbcreate", DBCreate());
+            functions.put("dbupdate", DBUpdate());
+            functions.put("dbexamine", DBExamine());
+        }
 
-                if (strings.size() == 0) {
-                    serverConnection.getOutputWriter().println("No arguments");
-                    serverConnection.getOutputWriter().println(USAGE);
-                    return;
-                }
-
-                switch (strings.get(0)) {
-                    case "room": {
-                        GameDatabaseConnection conn = serverConnection.getDatabaseConnection();
-                        String ID = conn.getNextRoomID();
-
-                        try {
-                            conn.addRoomID(ID);
-                        } catch (IDExistsException e) {
-                            serverConnection.getOutputWriter().println("Couldn't add room (ID exists)");
-                            log.log(Level.SEVERE, "Room save failed", e);
-                            return;
-                        }
-
-                        serverConnection.getOutputWriter().println("Room created with ID " + ID);
-                        break;
-                    }
-                }
-            });
-
-            functions.put("dbupdate", (serverConnection, strings) -> {
+        // Input callbacks
+        private BiConsumer<ServerConnection, List<String>> DBUpdate() {
+            return (serverConnection, strings) -> {
                 final String USAGE = "dbupdate [type] [ID] [attribute] [value]";
 
                 if (strings.size() == 0) {
@@ -184,9 +163,10 @@ public class CommandHandler implements InputHandler {
                         break;
                     }
                 }
-            });
-
-            functions.put("dbexamine", (serverConnection, strings) -> {
+            };
+        }
+        private BiConsumer<ServerConnection, List<String>> DBExamine() {
+            return (serverConnection, strings) -> {
                 final String USAGE = "dbexamine [type] [(optional) ID]";
 
                 if (strings.size() == 0) {
@@ -224,7 +204,36 @@ public class CommandHandler implements InputHandler {
                         serverConnection.getOutputWriter().println("Unrecognized object type " + strings.get(0));
                         serverConnection.getOutputWriter().println(USAGE);
                 }
-            });
+            };
+        }
+        private BiConsumer<ServerConnection, List<String>> DBCreate() {
+            return (serverConnection, strings) -> {
+                final String USAGE = "dbcreate [type]";
+
+                if (strings.size() == 0) {
+                    serverConnection.getOutputWriter().println("No arguments");
+                    serverConnection.getOutputWriter().println(USAGE);
+                    return;
+                }
+
+                switch (strings.get(0)) {
+                    case "room": {
+                        GameDatabaseConnection conn = serverConnection.getDatabaseConnection();
+                        String ID = conn.getNextRoomID();
+
+                        try {
+                            conn.addRoomID(ID);
+                        } catch (IDExistsException e) {
+                            serverConnection.getOutputWriter().println("Couldn't add room (ID exists)");
+                            log.log(Level.SEVERE, "Room save failed", e);
+                            return;
+                        }
+
+                        serverConnection.getOutputWriter().println("Room created with ID " + ID);
+                        break;
+                    }
+                }
+            };
         }
 
         public void dispatch(ServerConnection connection, String command, List<String> arguments) {
