@@ -89,18 +89,21 @@ public class GameDatabaseConnection extends DatabaseConnection {
         hash.put("username", user.getUsername());
         hash.put("hashed", digest);
         hash.put("salt", salt);
+        hash.put("currentRoomID", "-1");
 
         connection.hmset("user:" + user.getID(), hash);
     }
 
     /**
-     * Set user with ID to newUser, doesn't change password
+     * Set user with ID to newUser, doesn't change password, add if ID doesn't exist
      *
      * @param ID      ID to change
      * @param newUser user to set ID to
      */
-    public void updateUserGivenByID(String ID, User newUser) {
+    public void updateUser(String ID, User newUser) {
+        connection.sadd("user:ids", ID);
         connection.hset("user:" + ID, "username", newUser.getUsername());
+        connection.hset("user:" + ID, "currentRoomID", newUser.getCurrentRoomID());
     }
 
     /**
@@ -144,6 +147,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
                         User user = new User();
                         user.setID(ID);
                         user.setUsername(connection.hget("user:" + ID, "username"));
+                        user.setCurrentRoomID(connection.hget("user:" + ID, "currentRoomID"));
                         users.put(ID, user);
                     }
                 }
@@ -200,7 +204,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
      * @param ID to add
      * @throws IDExistsException if room with ID already exists
      */
-    public void addRoomID(String ID) throws IDExistsException {
+    public synchronized void addRoomID(String ID) throws IDExistsException {
         if (connection.smembers("room:ids").contains(ID)) {
             throw new IDExistsException();
         }
@@ -229,12 +233,9 @@ public class GameDatabaseConnection extends DatabaseConnection {
      * Update room at ID with new room
      * @param ID ID to at room at
      * @param room room to update with
-     * @throws NoIDException if ID given doesn't exist in database
      */
-    public synchronized void updateRoom(String ID, Room room) throws NoIDException {
-        if (!isIDRegistered(room)) {
-            throw new NoIDException();
-        }
+    public synchronized void updateRoom(String ID, Room room) {
+        connection.sadd("room:ids", ID);
         connection.hset("room:" + ID, "name", room.getName());
 
         if (room.hasExits()) {

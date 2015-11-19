@@ -40,13 +40,14 @@ public class User implements Saveable {
         testUser.group = Group.OWNER;
     }
 
-    public Group group;
+    private Group group;
     private String ID;
     private String username;
+    private String currentRoomID;
 
     public User(String username) {
         this.username = username;
-
+        this.currentRoomID = "-1";
         group = Group.PUBLIC;
     }
 
@@ -74,8 +75,16 @@ public class User implements Saveable {
         ID = connection.getNextUserID();
     }
 
+    public String getCurrentRoomID() {
+        return currentRoomID;
+    }
+
+    public void setCurrentRoomID(String currentRoomID) {
+        this.currentRoomID = currentRoomID;
+    }
+
     /**
-     * Class to build a new User instance (handles getting new user ID, etc.
+     * Class to build a new User instance (handles getting new user ID)
      */
     public static class Builder {
         private User user;

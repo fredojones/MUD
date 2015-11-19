@@ -34,7 +34,6 @@ import main.com.joebentley.mud.GameDatabaseConnection;
 import main.com.joebentley.mud.Server;
 import main.com.joebentley.mud.ServerConnection;
 import main.com.joebentley.mud.exceptions.IDExistsException;
-import main.com.joebentley.mud.exceptions.NoIDException;
 import main.com.joebentley.mud.saveables.Room;
 
 import java.io.IOException;
@@ -149,16 +148,12 @@ public class CommandHandler implements InputHandler {
 
                         GameDatabaseConnection conn = serverConnection.getDatabaseConnection();
 
-                        try {
-                            // Add room to database
-                            conn.updateRoom(ID, room);
-                            // Add room to list of current game rooms
-                            Server.game.updateRoom(ID, room);
-                        } catch (NoIDException e) {
-                            serverConnection.getOutputWriter().println("Given ID does not exist!");
-                            serverConnection.getOutputWriter().println(USAGE);
-                            log.log(Level.SEVERE, "Error updating room", e);
-                        }
+                        // Add room to database
+                        conn.updateRoom(ID, room);
+                        // Add room to list of current game rooms
+                        Server.game.updateRoom(ID, room);
+
+                        serverConnection.getOutputWriter().println("Updated room at ID " + ID);
 
                         break;
                     }
