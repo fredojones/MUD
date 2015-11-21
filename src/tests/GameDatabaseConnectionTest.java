@@ -132,6 +132,16 @@ public class GameDatabaseConnectionTest {
     }
 
     @Test
+    public void setRoomStoredProperly() throws UnsupportedEncodingException, NoSuchAlgorithmException, UsernameAlreadyExistsException {
+        user.setCurrentRoomID("1234");
+        connection.newUser(user, "password");
+
+        User saved = connection.getUsers().get(user.getID());
+
+        assertTrue(saved.getCurrentRoomID().equals("1234"));
+    }
+
+    @Test
     public void addedRoomIDExists() throws IDExistsException {
         connection.addRoomID(room.getID());
         assertTrue(connection.isIDRegistered(room));
@@ -144,4 +154,5 @@ public class GameDatabaseConnectionTest {
         assertTrue(stored.getName().equals(room.getName()));
         assertTrue(stored.getExits().equals(room.getExits()));
     }
+
 }

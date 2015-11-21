@@ -89,7 +89,7 @@ public class GameDatabaseConnection extends DatabaseConnection {
         hash.put("username", user.getUsername());
         hash.put("hashed", digest);
         hash.put("salt", salt);
-        hash.put("currentRoomID", "-1");
+        hash.put("currentRoomID", user.getCurrentRoomID());
 
         connection.hmset("user:" + user.getID(), hash);
     }
