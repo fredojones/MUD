@@ -94,15 +94,6 @@ public class GameDatabaseConnectionTest {
         user.setUsername("test");
     }
 
-    @Test
-    public void updatingNonExistingIDGetsAdded() {
-        connection.updateUser("100", user);
-        connection.updateRoom("100", room);
-
-        assertTrue(connection.getConnection().sismember("user:ids", "100"));
-        assertTrue(connection.getConnection().sismember("room:ids", "100"));
-    }
-
     @Test(expected = UsernameAlreadyExistsException.class)
     public void savingUserMultipleTimesThrowsException() throws NoSuchAlgorithmException, UnsupportedEncodingException, UsernameAlreadyExistsException {
         connection.newUser(user, "password");
@@ -125,20 +116,25 @@ public class GameDatabaseConnectionTest {
     }
 
     @Test
+    public void setRoomStoredProperly() throws UnsupportedEncodingException, NoSuchAlgorithmException, UsernameAlreadyExistsException {
+        user.setCurrentRoomID("1234");
+        connection.newUser(user, "password");
+        User saved = connection.getUsers().get(user.getID());
+
+        assertTrue(saved.getCurrentRoomID().equals("1234"));
+
+        saved.setCurrentRoomID("5346");
+        connection.updateUser(saved.getID(), saved);
+        saved = connection.getUsers().get(user.getID());
+
+        assertTrue(saved.getCurrentRoomID().equals("5346"));
+    }
+
+    @Test
     public void verifyingPassword() throws UnsupportedEncodingException, NoSuchAlgorithmException, UsernameAlreadyExistsException {
         connection.newUser(user, "password");
 
         assertTrue(connection.verifyPassword(user, "password"));
-    }
-
-    @Test
-    public void setRoomStoredProperly() throws UnsupportedEncodingException, NoSuchAlgorithmException, UsernameAlreadyExistsException {
-        user.setCurrentRoomID("1234");
-        connection.newUser(user, "password");
-
-        User saved = connection.getUsers().get(user.getID());
-
-        assertTrue(saved.getCurrentRoomID().equals("1234"));
     }
 
     @Test
@@ -155,4 +151,21 @@ public class GameDatabaseConnectionTest {
         assertTrue(stored.getExits().equals(room.getExits()));
     }
 
+    @Test
+    public void saveMethodsWorksOnSaveables() {
+        room.save(connection);
+        user.save(connection);
+
+        assertTrue(connection.getRooms().containsKey(room.getID()));
+        assertTrue(connection.getUsers().containsKey(user.getID()));
+    }
+
+    @Test
+    public void updatingNonExistingIDGetsAdded() {
+        connection.updateUser("100", user);
+        connection.updateRoom("100", room);
+
+        assertTrue(connection.getConnection().sismember("user:ids", "100"));
+        assertTrue(connection.getConnection().sismember("room:ids", "100"));
+    }
 }
