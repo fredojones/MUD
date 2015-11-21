@@ -39,9 +39,9 @@ public class Game {
     private Users onlineUsers;
     private Rooms rooms;
 
-    public Game() {
+    public Game(GameDatabaseConnection connection) {
         onlineUsers = new Users();
-        rooms = new Rooms();
+        rooms = connection.getRooms();
     }
 
     /**
