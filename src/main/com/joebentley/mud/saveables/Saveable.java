@@ -30,10 +30,18 @@
 
 package main.com.joebentley.mud.saveables;
 
+import main.com.joebentley.mud.GameDatabaseConnection;
+
 public interface Saveable {
     String getID();
 
     default String getSaveableName() {
         return this.getClass().getSimpleName().toLowerCase();
     }
+
+    /**
+     * Save the saveable to the database
+     * @param connection database connection to use
+     */
+    void save(GameDatabaseConnection connection);
 }

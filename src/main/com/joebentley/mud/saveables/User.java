@@ -83,6 +83,11 @@ public class User implements Saveable {
         this.currentRoomID = currentRoomID;
     }
 
+    @Override
+    public void save(GameDatabaseConnection connection) {
+        connection.updateUser(getID(), this);
+    }
+
     /**
      * Class to build a new User instance (handles getting new user ID)
      */

@@ -31,6 +31,7 @@
 package main.com.joebentley.mud.saveables;
 
 import main.com.joebentley.mud.BehaviourDispatcher;
+import main.com.joebentley.mud.GameDatabaseConnection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -91,6 +92,11 @@ public class Room implements Saveable {
 
     public BehaviourDispatcher getBehaviourDispatcher() {
         return behaviourDispatcher;
+    }
+
+    @Override
+    public void save(GameDatabaseConnection connection) {
+        connection.updateRoom(getID(), this);
     }
 
     public String toShortString() {
