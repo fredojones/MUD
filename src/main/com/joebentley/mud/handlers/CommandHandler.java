@@ -35,6 +35,8 @@ import main.com.joebentley.mud.Server;
 import main.com.joebentley.mud.ServerConnection;
 import main.com.joebentley.mud.exceptions.IDExistsException;
 import main.com.joebentley.mud.saveables.Room;
+import main.com.joebentley.mud.saveables.Rooms;
+import main.com.joebentley.mud.saveables.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,6 +92,78 @@ public class CommandHandler implements InputHandler {
                 } catch (IOException e) {
                     log.log(Level.SEVERE, e.getMessage());
                 }
+            });
+
+            functions.put("go", (serverConnection, strings) -> {
+                final String USAGE = "go [exit]";
+
+                if (strings.size() != 1) {
+                    serverConnection.getOutputWriter().println("Wrong number of arguments");
+                    serverConnection.getOutputWriter().println(USAGE);
+                    return;
+                }
+
+                String roomID = serverConnection.getUser().getCurrentRoomID();
+
+                String exitName = strings.get(0).trim();
+
+                // Get the next room if it exists
+                Rooms rooms = Server.game.getRooms();
+
+                if (!rooms.containsKey(roomID)) {
+                    serverConnection.getOutputWriter().println("Current room does not exist");
+                    return;
+                }
+
+                // Get the next room from the exits of current room
+                String nextRoomID = rooms.get(roomID).getExits().get(exitName);
+
+                if (nextRoomID == null) {
+                    serverConnection.getOutputWriter().println("No exit: " + exitName);
+                    return;
+                }
+
+                if (!rooms.containsKey(nextRoomID)) {
+                    serverConnection.getOutputWriter().println("Warning: New room does not exist yet");
+                }
+
+                User user = serverConnection.getUser();
+                user.setCurrentRoomID(nextRoomID);
+                user.save(serverConnection.getDatabaseConnection());
+
+                // Display new room description
+                serverConnection.getOutputWriter().print(Server.game.getRooms().get(nextRoomID).toString());
+            });
+
+            functions.put("look", (serverConnection, strings) -> {
+                String roomID = serverConnection.getUser().getCurrentRoomID();
+
+                Rooms rooms = Server.game.getRooms();
+
+                if (!rooms.containsKey(roomID)) {
+                    serverConnection.getOutputWriter().println("Room with ID: " + roomID + " does not exist");
+                    return;
+                }
+
+                serverConnection.getOutputWriter().print(rooms.get(roomID).toString());
+            });
+
+            functions.put("warp", (serverConnection, strings) -> {
+                final String USAGE = "warp [roomID]";
+
+                if (strings.size() != 1) {
+                    serverConnection.getOutputWriter().println("Wrong number of arguments");
+                    serverConnection.getOutputWriter().println(USAGE);
+                    return;
+                }
+
+                String roomID = strings.get(0).trim();
+
+                User user = serverConnection.getUser();
+                user.setCurrentRoomID(roomID);
+                user.save(serverConnection.getDatabaseConnection());
+
+                serverConnection.getOutputWriter().println("Warped to room: " + roomID);
             });
 
             functions.put("dbcreate", DBCreate());
